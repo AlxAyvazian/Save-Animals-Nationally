@@ -1,0 +1,123 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Montserrat",
+      "role": "body"
+    }
+  ],
+  "colors": {
+    "primary": "#970CDA",
+    "secondary": "#47CC5E",
+    "accent": "#47CC5E",
+    "background": "#FFFFFF",
+    "textPrimary": "#0A1439",
+    "link": "#0A1439"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Montserrat",
+      "heading": "Montserrat"
+    },
+    "fontStacks": {
+      "heading": [
+        "Montserrat"
+      ],
+      "body": [
+        "Montserrat"
+      ],
+      "paragraph": [
+        "Montserrat"
+      ]
+    },
+    "fontSizes": {
+      "h1": "156px",
+      "h2": "130px",
+      "body": "18px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "0px"
+  },
+  "components": {
+    "buttonPrimary": {
+      "background": "#47CC5E",
+      "textColor": "#0A1439",
+      "borderRadius": "100px",
+      "borderRadiusCorners": {
+        "topLeft": "100px",
+        "topRight": "100px",
+        "bottomRight": "100px",
+        "bottomLeft": "100px"
+      },
+      "shadow": "none"
+    },
+    "buttonSecondary": {
+      "background": "#0A1439",
+      "textColor": "#FFFFFF",
+      "borderRadius": "100px",
+      "borderRadiusCorners": {
+        "topLeft": "100px",
+        "topRight": "100px",
+        "bottomRight": "100px",
+        "bottomLeft": "100px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "favicon": "https://kurzgesagt.org/duck-favicon.png",
+    "ogImage": "https://ksite.fra1.cdn.digitaloceanspaces.com/uploads/adcb4e992f02cc7a518dacd8ad405f0d.png",
+    "logoHref": "File saved at: attached_assets/logoHref.html"
+  },
+  "__llm_logo_reasoning": {
+    "selectedIndex": 1,
+    "reasoning": "Selected #1 because it is a visible, medium-sized logo in the header area, linking to the homepage, which aligns with the brand 'kurzgesagt'.",
+    "confidence": 0.9,
+    "source": "llm"
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": 0,
+      "text": "All Job Openings",
+      "reasoning": "Button #0 ('All Job Openings') uses a vibrant green color (#47CC5E) which is consistent with the brand's accent color, making it the primary call-to-action."
+    },
+    "secondary": {
+      "index": 2,
+      "text": "Check it out",
+      "reasoning": "Button #2 ('Check it out') uses a different color (#0A1439) from the primary button, making it suitable as a secondary CTA."
+    },
+    "confidence": 0.95
+  },
+  "personality": {
+    "tone": "playful",
+    "energy": "high",
+    "targetAudience": "young adults and science enthusiasts"
+  },
+  "designSystem": {
+    "framework": "tailwind",
+    "componentLibrary": ""
+  },
+  "confidence": {
+    "buttons": 0.95,
+    "colors": 0.9,
+    "overall": 0.925
+  },
+  "__llm_metadata": {
+    "logoSelection": {
+      "llmCalled": true,
+      "llmSucceeded": true,
+      "finalSource": "llm",
+      "rawLogoSelection": {
+        "selectedLogoIndex": 1,
+        "selectedLogoReasoning": "Selected #1 because it is a visible, medium-sized logo in the header area, linking to the homepage, which aligns with the brand 'kurzgesagt'.",
+        "confidence": 0.9
+      }
+    },
+    "buttonClassification": {
+      "llmCalled": true,
+      "llmSucceeded": true
+    }
+  }
+}

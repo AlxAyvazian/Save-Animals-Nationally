@@ -1,0 +1,167 @@
+Build a polished national civic-tech web app called “VoiceMap National: Animal Protection Portal.”
+
+Purpose:
+A free public-interest portal that helps people across the United States document animal welfare concerns, identify patterns, generate responsible report packets, and route concerns to appropriate local, state, federal, nonprofit, and media channels.
+
+Important:
+This app must not claim abuse has legally occurred. It should use careful language:
+- “reported animal welfare concern”
+- “alleged incident”
+- “submitted evidence”
+- “requires investigation”
+- “pattern of reported concerns”
+- “public concern summary”
+The app should support responsible documentation, not public shaming.
+
+Design style:
+Use a premium MacOS Tahoe / Apple Liquid Glass interface:
+- frosted glass panels
+- translucent app cards
+- luminous animated background orbs
+- glowing hover and click borders
+- subtle moving gradients
+- dark navy, cyan, aqua, white glass, violet glow
+- national civic dashboard aesthetic
+- clean infographic style
+- rounded cards
+- simple icons
+- professional and credible
+
+Tech:
+React + Vite + Tailwind CSS.
+Use localStorage for version 1.
+No backend required yet.
+No paid APIs.
+Structure app so Supabase/database/photo upload/email routing can be added later.
+
+Pages:
+1. Landing Page
+2. National Concern Intake
+3. Jurisdiction Helper
+4. Report Packet Generator
+5. National Dashboard
+6. Advocacy Toolkit
+7. Resources and Safety
+
+Landing Page:
+Title: “A National Voice for Animals”
+Subtitle: “Document concerns, organize evidence, and help animal welfare issues reach the right people.”
+CTA:
+- Document a Concern
+- Build a Report Packet
+- Explore Advocacy Toolkit
+
+Feature cards:
+- Document Evidence
+- Identify Jurisdiction
+- Generate Reports
+- Escalate Patterns
+- Support Responsible Advocacy
+
+National Concern Intake:
+Fields:
+- Animal type
+- Number of animals
+- State
+- County
+- City
+- ZIP
+- Location description
+- Date/time observed
+- Environment:
+  - street/public area
+  - private property visible from public area
+  - shelter/facility
+  - business
+  - online/social media
+  - other
+- Concern category:
+  - stray/abandoned animals
+  - injured animal
+  - starving/dehydrated animal
+  - possible hoarding concern
+  - shelter condition concern
+  - repeated non-response by agency
+  - suspected organized cruelty
+  - illegal dumping/abandonment
+  - transport concern
+  - other
+- Urgency level
+- Description
+- Evidence notes
+- Photo/video placeholder
+- Agencies contacted
+- Response received?
+- User contact optional
+- Anonymous option
+- Consent and responsible reporting checkbox
+
+Jurisdiction Helper:
+Create an interactive questionnaire that explains where concerns may go:
+- Immediate danger: emergency / local law enforcement
+- Stray animal concern: local animal services
+- Shelter/facility concern: city/county agency or state oversight
+- Interstate or organized issue: may require federal/state/nonprofit escalation
+- Wildlife concern: state wildlife agency
+- Online content: platform reporting plus possible law enforcement tip
+Use disclaimer: “This is informational and not legal advice.”
+
+Report Packet Generator:
+Generate:
+- National report summary
+- Local jurisdiction summary
+- Timeline
+- Evidence checklist
+- Agency contact log
+- Suggested local report email
+- Suggested state-level escalation email
+- Suggested federal/public official concern letter
+- Suggested nonprofit coalition outreach email
+- Suggested media tip
+
+National Dashboard:
+Use demo/local data:
+- Total concerns
+- States represented
+- Highest concern categories
+- Urgency breakdown
+- Reports needing follow-up
+- Map placeholder of U.S.
+- State cards
+- Recent concerns feed
+- Filters by state, animal type, issue type, status
+
+Advocacy Toolkit:
+Tools/cards:
+- Public records request builder
+- City council comment builder
+- Media tip builder
+- Petition text builder
+- Neighborhood flyer text generator
+- Social post generator with responsible wording
+- Follow-up tracker template
+
+Resources/Safety:
+Include:
+- Responsible documentation guidelines
+- Evidence best practices
+- What not to do
+- Avoid trespassing/confrontation
+- Avoid defamatory claims
+- Emergency vs non-emergency
+- Data/privacy explanation
+
+Components:
+- AnimatedBackgroundOrbs
+- GlassCard
+- GlowButton
+- IntakeWizard
+- JurisdictionCard
+- ReportPacket
+- DashboardStats
+- USMapPlaceholder
+- ResourceToolkitCard
+- StatusBadge
+
+Make it fully responsive and visually stunning.
+The product should feel like a serious national animal welfare accountability platform.
