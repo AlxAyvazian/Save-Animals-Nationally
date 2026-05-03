@@ -1,0 +1,336 @@
+import { useState } from "react";
+import { Navigation } from "@/components/navigation";
+import { AnimatedBackgroundOrbs } from "@/components/animated-orbs";
+import { FileText, Copy, CheckCircle2, Info, Download } from "lucide-react";
+
+const DATA_CATEGORIES = [
+  { id: "euthanasia", label: "Euthanasia statistics", detail: "Monthly and annual euthanasia counts by species, reason, and method" },
+  { id: "intake", label: "Intake & outtake records", detail: "Animals received, adopted, transferred, reclaimed, and returned to field" },
+  { id: "loi", label: "Length-of-stay data", detail: "Average and median days an animal is held before disposition" },
+  { id: "complaints", label: "Complaint & investigation logs", detail: "All animal cruelty complaints received and their outcome/disposition" },
+  { id: "inspections", label: "Facility inspection reports", detail: "Any inspections conducted by state, county, or third-party auditors" },
+  { id: "medical", label: "Medical records policy", detail: "Written policy on veterinary care standards and emergency treatment" },
+  { id: "budget", label: "Budget & expenditure", detail: "Annual operating budget, per-animal cost, staffing levels" },
+  { id: "transfers", label: "Transfer partner list", detail: "All rescue organizations and shelters this facility transfers animals to" },
+  { id: "policies", label: "Written policies & procedures", detail: "Official SOPs for intake, housing, care, and euthanasia decisions" },
+  { id: "contracts", label: "Government contracts", detail: "Contracts with municipal or county government and their performance metrics" },
+];
+
+const US_STATES = [
+  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
+  "HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
+  "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
+  "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
+  "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY",
+];
+
+function buildLetter(form: Record<string, string>, categories: Set<string>): string {
+  const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const catList = DATA_CATEGORIES
+    .filter((c) => categories.has(c.id))
+    .map((c, i) => `   ${i + 1}. ${c.label} — ${c.detail}`)
+    .join("\n");
+
+  const dateRange = form.fromDate && form.toDate
+    ? `from ${form.fromDate} through ${form.toDate}`
+    : "for the most recent complete fiscal year available";
+
+  return `${form.requesterName || "[YOUR NAME]"}
+${form.requesterAddress || "[YOUR ADDRESS]"}
+${form.requesterCity ? `${form.requesterCity}, ${form.requesterState} ${form.requesterZip}` : "[CITY, STATE ZIP]"}
+${form.requesterEmail || "[YOUR EMAIL]"}
+
+${today}
+
+Records Custodian / FOIA Officer
+${form.agencyName || "[AGENCY NAME]"}
+${form.agencyAddress || "[AGENCY ADDRESS]"}
+${form.agencyCity ? `${form.agencyCity}, ${form.agencyState} ${form.agencyZip}` : "[CITY, STATE ZIP]"}
+
+RE: Public Records Request — Animal Welfare Statistics and Documentation
+
+To Whom It May Concern:
+
+Pursuant to ${form.agencyState ? `the ${form.agencyState}` : "applicable state"} public records law and, where applicable, the federal Freedom of Information Act (5 U.S.C. § 552), I hereby formally request copies of the following records maintained by ${form.agencyName || "your agency"}, ${dateRange}:
+
+${catList || "   [No categories selected — please select records to request above]"}
+
+SPECIFIC INSTRUCTIONS:
+
+1. Please provide records in electronic format (PDF, CSV, or Excel) via email where possible.
+2. If any portion of this request is denied, please identify the specific legal basis for each denial and provide all non-exempt portions.
+3. Please acknowledge receipt of this request within five (5) business days.
+4. I request a fee waiver on the grounds that disclosure of the requested records is in the public interest as it is likely to contribute significantly to public understanding of animal welfare standards in government-contracted facilities.
+
+If there are any fees associated with this request, please notify me before fulfilling it if they exceed $25.00.
+
+${form.urgencyReason ? `URGENCY / EXPEDITED PROCESSING REQUEST:\n${form.urgencyReason}\n\n` : ""}I am a member of the public seeking information to evaluate the welfare of animals in the care of publicly funded facilities. This information is a matter of public concern and I believe its disclosure serves the public interest.
+
+Please direct your response to:
+
+${form.requesterName || "[YOUR NAME]"}
+Email: ${form.requesterEmail || "[YOUR EMAIL]"}
+Phone: ${form.requesterPhone || "[YOUR PHONE]"}
+${form.requesterAddress || "[YOUR ADDRESS]"}
+${form.requesterCity ? `${form.requesterCity}, ${form.requesterState} ${form.requesterZip}` : "[CITY, STATE ZIP]"}
+
+Thank you for your prompt attention to this request. I look forward to your response within the time required by law.
+
+Sincerely,
+
+${form.requesterName || "[YOUR NAME]"}
+
+
+---
+[This letter was generated by VoiceMap National Animal Protection Portal — voicemap.app]
+[Filed: ${today} | This is a formal public records request. Please retain a copy for your agency's records.]`;
+}
+
+export default function FOIA() {
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [categories, setCategories] = useState<Set<string>>(new Set(["euthanasia", "intake", "complaints"]));
+  const [copied, setCopied] = useState(false);
+  const [tab, setTab] = useState<"form" | "preview">("form");
+
+  const set = (key: string, val: string) => setForm((p) => ({ ...p, [key]: val }));
+
+  const toggleCat = (id: string) => {
+    setCategories((prev) => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  };
+
+  const letter = buildLetter(form, categories);
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(letter);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const download = () => {
+    const blob = new Blob([letter], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `FOIA_Request_${form.agencyName?.replace(/\s+/g, "_") || "agency"}_${new Date().toISOString().split("T")[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const inputCls = "w-full bg-white/6 border border-white/12 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#970CDA]/60 focus:bg-white/8 transition-all";
+  const labelCls = "block text-white/50 text-xs font-black uppercase tracking-widest mb-1.5";
+
+  return (
+    <div className="min-h-[100dvh] flex flex-col relative pt-16">
+      <AnimatedBackgroundOrbs />
+      <Navigation />
+
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-10">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#970CDA]/40 bg-[#970CDA]/10 text-[#c060ff] text-xs font-black uppercase tracking-widest mb-5">
+            <FileText className="w-3.5 h-3.5" />
+            FOIA / Public Records Request Generator
+          </div>
+          <h1 className="font-black text-white text-4xl md:text-5xl leading-tight tracking-tight mb-3">
+            Compel Transparency.<br />
+            <span className="text-[#970CDA]">By Law.</span>
+          </h1>
+          <p className="text-white/55 text-lg max-w-2xl">
+            Agencies receiving public funds are legally required to disclose their records. Generate a properly formatted FOIA letter to demand euthanasia statistics, complaint logs, inspection reports, and more.
+          </p>
+        </div>
+
+        {/* Info banner */}
+        <div className="flex items-start gap-3 px-5 py-4 rounded-xl bg-[#47CC5E]/10 border border-[#47CC5E]/25 mb-8">
+          <Info className="w-5 h-5 text-[#47CC5E] shrink-0 mt-0.5" />
+          <p className="text-white/70 text-sm leading-relaxed">
+            <strong className="text-white">All 50 states have public records laws.</strong> Municipal animal shelters and county animal control agencies that receive government funding are subject to these laws. Most states require response within 5–10 business days. Non-response is a violation you can escalate to the state attorney general.
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6">
+          {(["form", "preview"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all ${
+                tab === t ? "bg-[#970CDA] text-white" : "bg-white/6 text-white/50 border border-white/10 hover:bg-white/10"
+              }`}
+            >
+              {t === "form" ? "Build Request" : "Preview Letter"}
+            </button>
+          ))}
+        </div>
+
+        {tab === "form" && (
+          <div className="flex flex-col gap-8">
+            {/* Agency info */}
+            <div className="bg-white/4 border border-white/10 rounded-2xl p-6">
+              <p className="text-white font-black text-base mb-5">Target Agency / Shelter</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className={labelCls}>Agency or Shelter Name *</label>
+                  <input className={inputCls} placeholder="e.g. City of Springfield Animal Control" value={form.agencyName ?? ""} onChange={(e) => set("agencyName", e.target.value)} />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelCls}>Street Address</label>
+                  <input className={inputCls} placeholder="123 Main St" value={form.agencyAddress ?? ""} onChange={(e) => set("agencyAddress", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>City</label>
+                  <input className={inputCls} placeholder="City" value={form.agencyCity ?? ""} onChange={(e) => set("agencyCity", e.target.value)} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}>State</label>
+                    <select className={inputCls} value={form.agencyState ?? ""} onChange={(e) => set("agencyState", e.target.value)}>
+                      <option value="">Select</option>
+                      {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelCls}>ZIP</label>
+                    <input className={inputCls} placeholder="00000" value={form.agencyZip ?? ""} onChange={(e) => set("agencyZip", e.target.value)} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Data categories */}
+            <div className="bg-white/4 border border-white/10 rounded-2xl p-6">
+              <p className="text-white font-black text-base mb-1">Records to Request</p>
+              <p className="text-white/40 text-xs mb-5">Select all that apply — each category generates its own specific request item in the letter.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {DATA_CATEGORIES.map((cat) => {
+                  const active = categories.has(cat.id);
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => toggleCat(cat.id)}
+                      className={`flex items-start gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                        active ? "bg-[#970CDA]/20 border border-[#970CDA]/40" : "bg-white/4 border border-white/8 hover:bg-white/8"
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded shrink-0 mt-0.5 border flex items-center justify-center ${active ? "bg-[#970CDA] border-[#970CDA]" : "border-white/30"}`}>
+                        {active && <CheckCircle2 className="w-3 h-3 text-white" />}
+                      </div>
+                      <div>
+                        <p className={`text-sm font-bold ${active ? "text-[#c060ff]" : "text-white/70"}`}>{cat.label}</p>
+                        <p className="text-white/35 text-xs mt-0.5">{cat.detail}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Date range */}
+            <div className="bg-white/4 border border-white/10 rounded-2xl p-6">
+              <p className="text-white font-black text-base mb-5">Date Range (optional)</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelCls}>From</label>
+                  <input type="date" className={inputCls} value={form.fromDate ?? ""} onChange={(e) => set("fromDate", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>To</label>
+                  <input type="date" className={inputCls} value={form.toDate ?? ""} onChange={(e) => set("toDate", e.target.value)} />
+                </div>
+              </div>
+            </div>
+
+            {/* Your info */}
+            <div className="bg-white/4 border border-white/10 rounded-2xl p-6">
+              <p className="text-white font-black text-base mb-5">Your Information (Requester)</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelCls}>Full Name *</label>
+                  <input className={inputCls} placeholder="Your full legal name" value={form.requesterName ?? ""} onChange={(e) => set("requesterName", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>Email *</label>
+                  <input type="email" className={inputCls} placeholder="your@email.com" value={form.requesterEmail ?? ""} onChange={(e) => set("requesterEmail", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>Phone</label>
+                  <input className={inputCls} placeholder="555-555-5555" value={form.requesterPhone ?? ""} onChange={(e) => set("requesterPhone", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>Street Address</label>
+                  <input className={inputCls} placeholder="123 Main St" value={form.requesterAddress ?? ""} onChange={(e) => set("requesterAddress", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>City</label>
+                  <input className={inputCls} placeholder="City" value={form.requesterCity ?? ""} onChange={(e) => set("requesterCity", e.target.value)} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}>State</label>
+                    <select className={inputCls} value={form.requesterState ?? ""} onChange={(e) => set("requesterState", e.target.value)}>
+                      <option value="">Select</option>
+                      {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelCls}>ZIP</label>
+                    <input className={inputCls} placeholder="00000" value={form.requesterZip ?? ""} onChange={(e) => set("requesterZip", e.target.value)} />
+                  </div>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelCls}>Urgency / Expedited Processing Reason (optional)</label>
+                  <textarea
+                    className={`${inputCls} resize-none h-20`}
+                    placeholder="e.g. Animals are currently being held and euthanized at this facility. Timely disclosure is necessary to prevent imminent harm..."
+                    value={form.urgencyReason ?? ""}
+                    onChange={(e) => set("urgencyReason", e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setTab("preview")}
+              className="w-full px-6 py-4 rounded-full bg-[#970CDA] text-white font-black text-sm uppercase tracking-wider hover:bg-[#aa20ef] hover:shadow-[0_0_28px_rgba(151,12,218,0.5)] transition-all flex items-center justify-center gap-2"
+            >
+              <FileText className="w-4 h-4" /> Preview & Export Letter
+            </button>
+          </div>
+        )}
+
+        {tab === "preview" && (
+          <div>
+            <div className="flex gap-3 mb-4">
+              <button
+                onClick={copy}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#47CC5E] text-[#0A1439] font-black text-xs uppercase tracking-wider hover:bg-[#5adb70] transition-all"
+              >
+                {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? "Copied!" : "Copy to Clipboard"}
+              </button>
+              <button
+                onClick={download}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#970CDA] text-white font-black text-xs uppercase tracking-wider hover:bg-[#aa20ef] transition-all"
+              >
+                <Download className="w-4 h-4" /> Download .txt
+              </button>
+              <button
+                onClick={() => setTab("form")}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/8 text-white/60 border border-white/12 font-bold text-xs hover:bg-white/14 transition-all"
+              >
+                Edit
+              </button>
+            </div>
+            <div className="bg-[#0a0f1e] border border-white/12 rounded-2xl p-6 font-mono text-xs text-white/75 leading-relaxed whitespace-pre-wrap overflow-x-auto">
+              {letter}
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
